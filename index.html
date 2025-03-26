@@ -34,8 +34,8 @@
                         <div class="time-section">
                             <div class="time-group">
                                 <div class="time-segment hours">
-                                    <span class="digit tens">2</span>
-                                    <span class="digit ones">4</span>
+                                    <span class="digit tens">0</span>
+                                    <span class="digit ones">0</span>
                                 </div>
                                 <p class="time-label">HOURS</p>
                             </div>
@@ -61,9 +61,8 @@
                     </div>
                 </div>
                 
-                <div class="button-container">
-                    <button id="startButton" class="glow-button">START HACK</button>
-                    <button id="resetButton" class="reset-button"><i class="fas fa-redo-alt"></i></button>
+                <div class="status-message">
+                    <p id="hackStatus" class="status-text">HACKING IN PROGRESS...</p>
                 </div>
                 
                 <div class="info-box">
@@ -172,13 +171,8 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // Timer Functionality
-        const startButton = document.getElementById('startButton');
-        const resetButton = document.getElementById('resetButton');
-        
+        // Timer Functionality - Countdown to 10 AM on March 27, 2025
         let countdown;
-        let totalSeconds = (22 * 60 * 60) + (30 * 60);
-        // 24 hours in seconds
         
         function updateTimerDisplay(seconds) {
             const hours = Math.floor(seconds / 3600);
@@ -195,11 +189,7 @@
             document.querySelector('.seconds .ones').textContent = secs % 10;
             
             // Add pulsing effect when time is running
-            if (seconds < totalSeconds) {
-                document.querySelector('.countdown').classList.add('running');
-            } else {
-                document.querySelector('.countdown').classList.remove('running');
-            }
+            document.querySelector('.countdown').classList.add('running');
             
             // Add urgent effect when under 1 hour
             if (seconds < 3600) {
@@ -209,60 +199,46 @@
             }
         }
         
+        function getTimeRemaining() {
+            // Set the end date to March 27, 2025, 10:00 AM
+            const endDate = new Date('March 27, 2025 09:30:00');
+            const now = new Date();
+            
+            // Get the time difference in seconds
+            const timeDifference = Math.floor((endDate - now) / 1000);
+            
+            return timeDifference > 0 ? timeDifference : 0;
+        }
+        
         function startTimer() {
             // Clear any existing timers
             if (countdown) {
                 clearInterval(countdown);
             }
             
-            let secondsRemaining = totalSeconds;
+            let secondsRemaining = getTimeRemaining();
             
             // Initial display update
             updateTimerDisplay(secondsRemaining);
             
             // Start the countdown
             countdown = setInterval(() => {
-                secondsRemaining--;
+                secondsRemaining = getTimeRemaining();
                 
-                if (secondsRemaining < 0) {
+                if (secondsRemaining <= 0) {
                     clearInterval(countdown);
                     document.querySelector('.countdown').classList.add('finished');
+                    document.getElementById('hackStatus').textContent = "HACKATHON ENDED!";
+                    document.querySelector('.countdown').classList.remove('running');
                     return;
                 }
                 
                 updateTimerDisplay(secondsRemaining);
             }, 1000);
-            
-            // Change button state
-            startButton.disabled = true;
-            startButton.classList.add('active');
-            startButton.textContent = "HACKING...";
         }
         
-        function resetTimer() {
-            // Clear the timer
-            if (countdown) {
-                clearInterval(countdown);
-            }
-            
-            // Reset the display
-            updateTimerDisplay(totalSeconds);
-            
-            // Reset button state
-            startButton.disabled = false;
-            startButton.classList.remove('active');
-            startButton.textContent = "START HACK";
-            
-            // Remove any special classes
-            document.querySelector('.countdown').classList.remove('running', 'urgent', 'finished');
-        }
-        
-        // Set up event listeners
-        startButton.addEventListener('click', startTimer);
-        resetButton.addEventListener('click', resetTimer);
-        
-        // Initial timer display
-        updateTimerDisplay(totalSeconds);
+        // Start the timer automatically when the page loads
+        document.addEventListener('DOMContentLoaded', startTimer);
     </script>
 
 
