@@ -12,6 +12,7 @@
     --accent-color: #00ffff;
     --border-radius: 8px;
     --glow-color: rgba(187, 0, 255, 0.7);
+    --teams-color: #464EB8;
 }
 
 * {
@@ -104,6 +105,42 @@ body, html {
     opacity: 0;
     animation: glitch-animation 5s infinite;
     pointer-events: none;
+}
+
+/* Teams Meeting Button */
+.teams-button {
+    position: absolute;
+    bottom: 20px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 8px 15px;
+    background: rgba(10, 10, 10, 0.85);
+    color: var(--text-color);
+    border: 1px solid var(--teams-color);
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    z-index: 10;
+    box-shadow: 0 0 10px rgba(70, 78, 184, 0.5);
+}
+
+.teams-button i {
+    color: var(--teams-color);
+    font-size: 1rem;
+}
+
+.teams-button:hover {
+    background: rgba(70, 78, 184, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(70, 78, 184, 0.7);
+}
+
+.teams-button:active {
+    transform: translateY(0);
 }
 
 @keyframes glitch-animation {
@@ -461,56 +498,7 @@ body, html {
     }
     
     .left {
-        border-right: none;
+        border-right: nonea;
         border-bottom: 2px solid var(--primary-color);
-    }
-    
-    .countdown {
-        padding: 20px;
-    }
-    
-    .time-section {
-        min-width: 60px;
-    }
-    
-    .digit {
-        font-size: 2rem;
-        width: 35px;
-        height: 50px;
-    }
-}
-
-@media (max-width: 600px) {
-    .title {
-        font-size: 2rem;
-    }
-    
-    .subtitle {
-        font-size: 1rem;
-    }
-    
-    .countdown {
-        padding: 15px;
-        gap: 10px;
-    }
-    
-    .digit {
-        font-size: 1.8rem;
-        width: 30px;
-        height: 45px;
-    }
-    
-    .button-container {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .info-box {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .info-item {
-        width: 90%;
     }
 }
