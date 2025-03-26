@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robotic Hackathon - ACE HACKS</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Side - Poster -->
+        <div class="split left">
+            <div class="poster-container">
+                <img src="acehack.png" alt="ACE HACKS Poster" class="poster">
+                <div class="glitch-effect"></div>
+            </div>
+        </div>
+
+        <!-- Right Side - Timer -->
+        <div class="split right">
+            <div class="timer-container">
+                <h1 class="title">ROBOTIC <span class="highlight">HACKATHON</span></h1>
+                <h2 class="subtitle">RACE AGAINST TIME</h2>
+                
+                <div class="countdown-wrapper">
+                    <div class="countdown">
+                        <div class="time-section">
+                            <div class="time-group">
+                                <div class="time-segment hours">
+                                    <span class="digit tens">2</span>
+                                    <span class="digit ones">4</span>
+                                </div>
+                                <p class="time-label">HOURS</p>
+                            </div>
+                        </div>
+                        <div class="time-section">
+                            <div class="time-group">
+                                <div class="time-segment minutes">
+                                    <span class="digit tens">0</span>
+                                    <span class="digit ones">0</span>
+                                </div>
+                                <p class="time-label">MINUTES</p>
+                            </div>
+                        </div>
+                        <div class="time-section">
+                            <div class="time-group">
+                                <div class="time-segment seconds">
+                                    <span class="digit tens">0</span>
+                                    <span class="digit ones">0</span>
+                                </div>
+                                <p class="time-label">SECONDS</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="button-container">
+                    <button id="startButton" class="glow-button">START HACK</button>
+                    <button id="resetButton" class="reset-button"><i class="fas fa-redo-alt"></i></button>
+                </div>
+                
+                <div class="info-box">
+                    <div class="info-item">
+                        <i class="fas fa-trophy"></i>
+                        <p>PRIZE POOL: ₹15,000</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-users"></i>
+                        <p>MAX 4 PER TEAM</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <p>MARCH 26-27, 2025</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3D Background Animation -->
+    <div id="bg-animation"></div>
+
+    <script>
+        // Three.js 3D Animation
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('bg-animation').appendChild(renderer.domElement);
+
+        // Create a grid of lines
+        const gridSize = 20;
+        const gridDivisions = 20;
+        const gridHelper = new THREE.GridHelper(gridSize, gridDivisions, 0x9900ff, 0x440088);
+        scene.add(gridHelper);
+
+        // Add particles
+        const particleGeometry = new THREE.BufferGeometry();
+        const particleCount = 1000;
+        
+        const positions = new Float32Array(particleCount * 3);
+        
+        for (let i = 0; i < particleCount * 3; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 50;
+            positions[i + 1] = (Math.random() - 0.5) * 50;
+            positions[i + 2] = (Math.random() - 0.5) * 50;
+        }
+        
+        particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        
+        const particleMaterial = new THREE.PointsMaterial({
+            color: 0xbb00ff,
+            size: 0.1,
+            transparent: true
+        });
+        
+        const particles = new THREE.Points(particleGeometry, particleMaterial);
+        scene.add(particles);
+
+        // Create a few floating cubes
+        const cubes = [];
+        for (let i = 0; i < 10; i++) {
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshBasicMaterial({ 
+                color: 0x9900ff, 
+                wireframe: true,
+                transparent: true,
+                opacity: 0.6
+            });
+            const cube = new THREE.Mesh(geometry, material);
+            
+            cube.position.x = (Math.random() - 0.5) * 20;
+            cube.position.y = (Math.random() - 0.5) * 20;
+            cube.position.z = (Math.random() - 0.5) * 20;
+            
+            scene.add(cube);
+            cubes.push(cube);
+        }
+
+        camera.position.z = 15;
+        camera.position.y = 5;
+        camera.rotation.x = -Math.PI / 10;
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            gridHelper.rotation.y += 0.002;
+            particles.rotation.y += 0.001;
+            
+            cubes.forEach(cube => {
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+            });
+            
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Timer Functionality
+        const startButton = document.getElementById('startButton');
+        const resetButton = document.getElementById('resetButton');
+        
+        let countdown;
+        let totalSeconds = 24 * 60 * 60; // 24 hours in seconds
+        
+        function updateTimerDisplay(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            document.querySelector('.hours .tens').textContent = Math.floor(hours / 10);
+            document.querySelector('.hours .ones').textContent = hours % 10;
+            
+            document.querySelector('.minutes .tens').textContent = Math.floor(minutes / 10);
+            document.querySelector('.minutes .ones').textContent = minutes % 10;
+            
+            document.querySelector('.seconds .tens').textContent = Math.floor(secs / 10);
+            document.querySelector('.seconds .ones').textContent = secs % 10;
+            
+            // Add pulsing effect when time is running
+            if (seconds < totalSeconds) {
+                document.querySelector('.countdown').classList.add('running');
+            } else {
+                document.querySelector('.countdown').classList.remove('running');
+            }
+            
+            // Add urgent effect when under 1 hour
+            if (seconds < 3600) {
+                document.querySelector('.countdown').classList.add('urgent');
+            } else {
+                document.querySelector('.countdown').classList.remove('urgent');
+            }
+        }
+        
+        function startTimer() {
+            // Clear any existing timers
+            if (countdown) {
+                clearInterval(countdown);
+            }
+            
+            let secondsRemaining = totalSeconds;
+            
+            // Initial display update
+            updateTimerDisplay(secondsRemaining);
+            
+            // Start the countdown
+            countdown = setInterval(() => {
+                secondsRemaining--;
+                
+                if (secondsRemaining < 0) {
+                    clearInterval(countdown);
+                    document.querySelector('.countdown').classList.add('finished');
+                    return;
+                }
+                
+                updateTimerDisplay(secondsRemaining);
+            }, 1000);
+            
+            // Change button state
+            startButton.disabled = true;
+            startButton.classList.add('active');
+            startButton.textContent = "HACKING...";
+        }
+        
+        function resetTimer() {
+            // Clear the timer
+            if (countdown) {
+                clearInterval(countdown);
+            }
+            
+            // Reset the display
+            updateTimerDisplay(totalSeconds);
+            
+            // Reset button state
+            startButton.disabled = false;
+            startButton.classList.remove('active');
+            startButton.textContent = "START HACK";
+            
+            // Remove any special classes
+            document.querySelector('.countdown').classList.remove('running', 'urgent', 'finished');
+        }
+        
+        // Set up event listeners
+        startButton.addEventListener('click', startTimer);
+        resetButton.addEventListener('click', resetTimer);
+        
+        // Initial timer display
+        updateTimerDisplay(totalSeconds);
+    </script>
+</body>
+</html>
